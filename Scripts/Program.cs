@@ -6,29 +6,27 @@ using System.Net;
 class HttpFileServer
 {
     private HttpListener m_HttpListener;
-    private string m_BaseFolder;
+    private string m_TargetDirectory;
     private string m_IP;
     private int m_Port;
 
-    public HttpFileServer(string baseFolder, int port)
+    public HttpFileServer(string targetDirectory, string ip, int port)
     {
-        m_BaseFolder = baseFolder;
-        m_IP = HttpFileServer.GetIPAddress();
+        m_TargetDirectory = targetDirectory;
+        m_IP = ip;
         m_Port = port;
         m_HttpListener = new HttpListener();
         m_HttpListener.Prefixes.Add($"http://127.0.0.1:{m_Port}/");
         m_HttpListener.Prefixes.Add($"http://{m_IP}:{port}/");
-        //m_HttpListener.Prefixes.Add($"http://{m_IP}:{m_Port}/");
-        //m_HttpListener.Prefixes.Add($"http://10.190.140.95:{port}/");
     }
 
     public void Start()
     {
-        Console.WriteLine($"Server BaseFolder : {m_BaseFolder}");
-        Console.WriteLine($"Server BaseFolder : {m_IP}");
-        Console.WriteLine($"Server Port : {m_Port}");
+        Console.WriteLine($"HFS Target Directory : {m_TargetDirectory}");
+        Console.WriteLine($"HFS IP : {m_IP}");
+        Console.WriteLine($"HFS Port : {m_Port}");
         m_HttpListener.Start();
-        Console.WriteLine($"Server Start.");
+        Console.WriteLine($"HFS Start.");
         while (true)
         {
             try
@@ -48,7 +46,7 @@ class HttpFileServer
         Console.WriteLine($"[{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
 
         var requestedFile = context.Request.Url.AbsolutePath.Substring(1);
-        var filepath = Path.Combine(m_BaseFolder, requestedFile);
+        var filepath = Path.Combine(m_TargetDirectory, requestedFile);
 
         if (!File.Exists(filepath))
         {
@@ -81,7 +79,7 @@ class HttpFileServer
 
     public void Stop()
     {
-        Console.WriteLine($"Server Stop.");
+        Console.WriteLine($"HFS Stop.");
         m_HttpListener.Stop();
         m_HttpListener.Close();
     }
@@ -101,23 +99,24 @@ class HttpFileServer
         return string.Empty;
     }
 
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
-        // DESKTOP-I2UJ2LD
-        // WORKGROUP
-        // Acts29
-        // 패스트파이브는 다음의 방법을 통해 도메인을 예약해야 서버가 열림.
-        // netsh http add urlacl url = http://127.0.0.1:8991/ user=Acts29 
-        // netsh http add urlacl url = http://10.190.140.95:8991/ user=Acts29
-        // 외부에서 접속하려면 추가로 방화벽도 꺼야함.
+        var argumentsParser = new ArgumentsParser(args);
+        var targetDirectories = argumentsParser["-dir"];
+        var targetPorts = argumentsParser["-port"];
 
-        // http://localhost:8991/Boutique_Teaser_04.mp4
-        // http://10.190.140.95:8991/Boutique_Teaser_04.mp4
+        if (targetDirectories.Count == 0)
+            targetDirectories.Add(Environment.CurrentDirectory);
 
-        var baseFolder = args.Length > 0 ? args[0] : "D:\\Files";
-        var port = args.Length > 1 ? int.Parse(args[1]) : 8991;
+        if (targetPorts.Count == 0)
+            targetPorts.Add("8991");
 
-        var httpFileServer = new HttpFileServer(baseFolder, port);
+        var targetDirectory = targetDirectories[0];
+        var ip = HttpFileServer.GetIPAddress();
+        var port = int.Parse(targetPorts[0]);
+
+        var httpFileServer = new HttpFileServer(targetDirectory, ip, port);
+
         httpFileServer.Start();
     }
 }
