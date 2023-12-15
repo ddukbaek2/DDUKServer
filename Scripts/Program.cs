@@ -22,11 +22,11 @@ class HttpFileServer
 
     public void Start()
     {
-        Console.WriteLine($"HFS Target Directory : {m_TargetDirectory}");
-        Console.WriteLine($"HFS IP : {m_IP}");
-        Console.WriteLine($"HFS Port : {m_Port}");
+        Console.WriteLine($"[HFS] Target Directory : {m_TargetDirectory}");
+        Console.WriteLine($"[HFS] IP : {m_IP}");
+        Console.WriteLine($"[HFS] Port : {m_Port}");
         m_HttpListener.Start();
-        Console.WriteLine($"HFS Start.");
+        Console.WriteLine($"[HFS] Start.");
         while (true)
         {
             try
@@ -36,14 +36,14 @@ class HttpFileServer
             }
             catch (Exception exeption)
             {
-                Console.WriteLine($"Error: {exeption.Message}");
+                Console.WriteLine($"[HFS] Error: {exeption.Message}");
             }
         }
     }
 
     private void ProcessRequest(HttpListenerContext context)
     {
-        Console.WriteLine($"[{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
+        Console.WriteLine($"[HFS][{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
 
         var requestedFile = context.Request.Url.AbsolutePath.Substring(1);
         var filepath = Path.Combine(m_TargetDirectory, requestedFile);
@@ -52,7 +52,7 @@ class HttpFileServer
         {
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
             context.Response.OutputStream.Close();
-            Console.WriteLine($"Not Found : {filepath}");
+            Console.WriteLine($"[HFS] File is Not Found : {filepath}");
             return;
         }
 
@@ -71,7 +71,7 @@ class HttpFileServer
         catch (Exception ex)
         {
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            Console.WriteLine($"Exception : {ex.Message}");
+            Console.WriteLine($"[HFS] Exception : {ex.Message}");
         }
 
         context.Response.OutputStream.Close();
@@ -79,7 +79,7 @@ class HttpFileServer
 
     public void Stop()
     {
-        Console.WriteLine($"HFS Stop.");
+        Console.WriteLine($"[HFS] Stop.");
         m_HttpListener.Stop();
         m_HttpListener.Close();
     }
