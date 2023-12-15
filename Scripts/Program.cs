@@ -106,7 +106,7 @@ class HttpFileServer
         var targetPorts = argumentsParser["-port"];
 
         if (targetDirectories.Count == 0)
-            targetDirectories.Add(Environment.CurrentDirectory);
+            targetDirectories.Add($"{Environment.CurrentDirectory}\\Files");
 
         if (targetPorts.Count == 0)
             targetPorts.Add("8991");
