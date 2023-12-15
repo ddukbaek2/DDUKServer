@@ -1,1 +1,1 @@
-HttpFileServer.exe -dir "%cd%\ExampleFolder" -port 8991
+HttpFileServer.exe -dir "%cd%\Files" -port 8991
