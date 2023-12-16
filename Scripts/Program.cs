@@ -25,6 +25,7 @@ class HttpFileServer
         Console.WriteLine($"[HFS] Target Directory : {m_TargetDirectory}");
         Console.WriteLine($"[HFS] IP : {m_IP}");
         Console.WriteLine($"[HFS] Port : {m_Port}");
+
         m_HttpListener.Start();
         Console.WriteLine($"[HFS] Start.");
         while (true)
@@ -63,9 +64,11 @@ class HttpFileServer
                 context.Response.ContentType = "application/octet-stream";
                 context.Response.ContentLength64 = stream.Length;
                 context.Response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
+				//context.Response.AddHeader("Content-Encoding", "gzip"); // GZIP 헤더 설정.
+
+				context.Response.StatusCode = (int)HttpStatusCode.OK;
                 stream.CopyTo(context.Response.OutputStream);
-                Console.WriteLine($"OK : {filepath}");
+                Console.WriteLine($"[HFS] OK : {filepath}");
             }
         }
         catch (Exception ex)
