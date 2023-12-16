@@ -6,8 +6,8 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
+    <StartupObject>DDUKServer.HTTPBackendServer</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <StartupObject>DDUKServer.HTTPFileServer</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
