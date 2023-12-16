@@ -1,5 +1,4 @@
 # DDUKServer
-=============
 
 ## HttpFileServer
  - CORS 로 인한 제약을 무시하게끔 헤더가 설정된 초간단 HTTP 파일 서버입니다.
