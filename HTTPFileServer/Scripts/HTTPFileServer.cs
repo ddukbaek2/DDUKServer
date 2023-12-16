@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using DDUKServer;
 
 
 namespace DDUKServer
@@ -75,10 +76,10 @@ namespace DDUKServer
 					Console.WriteLine($"[HFS] OK : {filepath}");
 				}
 			}
-			catch (Exception ex)
+			catch (Exception exception)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				Console.WriteLine($"[HFS] Exception : {ex.Message}");
+				Console.WriteLine($"[HFS] Exception : {exception.Message}");
 			}
 
 			context.Response.OutputStream.Close();
@@ -89,21 +90,6 @@ namespace DDUKServer
 			Console.WriteLine($"[HFS] Stop.");
 			m_HttpListener.Stop();
 			m_HttpListener.Close();
-		}
-
-		public static string GetIPAddress()
-		{
-			var hostName = Dns.GetHostName();
-			var hostEntry = Dns.GetHostEntry(hostName);
-			foreach (var address in hostEntry.AddressList)
-			{
-				if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-					continue;
-
-				return address.ToString();
-			}
-
-			return string.Empty;
 		}
 
 		public static void Main(string[] args)
@@ -119,7 +105,7 @@ namespace DDUKServer
 				targetPorts.Add("8991");
 
 			var targetDirectory = targetDirectories[0];
-			var ip = HTTPFileServer.GetIPAddress();
+			var ip = Utility.GetIPAddress();
 			var port = int.Parse(targetPorts[0]);
 
 			var httpFileServer = new HTTPFileServer(targetDirectory, ip, port);

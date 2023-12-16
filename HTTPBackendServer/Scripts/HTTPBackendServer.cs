@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 
 namespace DDUKServer
@@ -11,28 +14,30 @@ namespace DDUKServer
 	public class HTTPBackendServer
 	{
 		private HttpListener m_HttpListener;
-		private string m_TargetDirectory;
+		private CancellationTokenSource m_CancellationTokenSource;
+		private ConcurrentBag<Session> m_Sessions;
+
 		private string m_IP;
 		private int m_Port;
 
-		public HTTPBackendServer(string targetDirectory, string ip, int port)
+		public HTTPBackendServer(string ip, int port)
 		{
-			m_TargetDirectory = targetDirectory;
 			m_IP = ip;
 			m_Port = port;
 			m_HttpListener = new HttpListener();
 			m_HttpListener.Prefixes.Add($"http://127.0.0.1:{m_Port}/");
 			m_HttpListener.Prefixes.Add($"http://{m_IP}:{port}/");
+
+			m_Sessions = new ConcurrentBag<Session>();
 		}
 
 		public void Start()
 		{
-			Console.WriteLine($"[HFS] Target Directory : {m_TargetDirectory}");
-			Console.WriteLine($"[HFS] IP : {m_IP}");
-			Console.WriteLine($"[HFS] Port : {m_Port}");
+			Console.WriteLine($"[HBS] IP : {m_IP}");
+			Console.WriteLine($"[HBS] Port : {m_Port}");
 
 			m_HttpListener.Start();
-			Console.WriteLine($"[HFS] Start.");
+			Console.WriteLine($"[HBS] Start.");
 			while (true)
 			{
 				try
@@ -42,90 +47,54 @@ namespace DDUKServer
 				}
 				catch (Exception exeption)
 				{
-					Console.WriteLine($"[HFS] Error: {exeption.Message}");
+					Console.WriteLine($"[HBS] Error: {exeption.Message}");
 				}
 			}
 		}
 
 		private void ProcessRequest(HttpListenerContext context)
 		{
-			Console.WriteLine($"[HFS][{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
+			Console.WriteLine($"[HBS][{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
 
-			var requestedFile = context.Request.Url.AbsolutePath.Substring(1);
-			var filepath = Path.Combine(m_TargetDirectory, requestedFile);
-
-			if (!File.Exists(filepath))
+			// 풀에서 가져온다.
+			if (!m_Sessions.TryTake(out var session))
 			{
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-				context.Response.OutputStream.Close();
-				Console.WriteLine($"[HFS] File is Not Found : {filepath}");
-				return;
+				// 없다면 새로 만든다.
+				session = new Session(this);
 			}
 
-			try
-			{
-				using (var stream = File.OpenRead(filepath))
-				{
-					context.Response.ContentType = "application/octet-stream";
-					context.Response.ContentLength64 = stream.Length;
-					context.Response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
-					context.Response.AddHeader("Content-Encoding", "gzip"); // GZIP 헤더 설정.
+			// 클라는 서버에게 파일을 요청할 수 있다.
+			// 클라는 서버에게 문서를 요청할 수 있다. (파일과 사실상 동일한 방식이다)
+			// 클라는 서버에게 압축 파일을 스트리밍형태로 요청할 수 있다.
 
-					context.Response.StatusCode = (int)HttpStatusCode.OK;
-					stream.CopyTo(context.Response.OutputStream);
-					Console.WriteLine($"[HFS] OK : {filepath}");
-				}
-			}
-			catch (Exception ex)
+			Task.Run(() =>
 			{
-				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				Console.WriteLine($"[HFS] Exception : {ex.Message}");
-			}
-
-			context.Response.OutputStream.Close();
+				session.ProcessRequest(context);
+				m_Sessions.Add(session); // 처리가 끝난 후 다시 풀에 넣는다.
+			});
 		}
 
 		public void Stop()
 		{
-			Console.WriteLine($"[HFS] Stop.");
+			Console.WriteLine($"[HBS] Stop.");
 			m_HttpListener.Stop();
 			m_HttpListener.Close();
-		}
-
-		public static string GetIPAddress()
-		{
-			var hostName = Dns.GetHostName();
-			var hostEntry = Dns.GetHostEntry(hostName);
-			foreach (var address in hostEntry.AddressList)
-			{
-				if (address.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork)
-					continue;
-
-				return address.ToString();
-			}
-
-			return string.Empty;
 		}
 
 		public static void Main(string[] args)
 		{
 			var argumentsParser = new ArgumentsParser(args);
-			var targetDirectories = argumentsParser["-dir"];
 			var targetPorts = argumentsParser["-port"];
 
-			if (targetDirectories.Count == 0)
-				targetDirectories.Add($"{Environment.CurrentDirectory}\\Files");
-
 			if (targetPorts.Count == 0)
-				targetPorts.Add("8991");
+				targetPorts.Add("8990");
 
-			var targetDirectory = targetDirectories[0];
-			var ip = HTTPBackendServer.GetIPAddress();
+			var ip = Utility.GetIPAddress();
 			var port = int.Parse(targetPorts[0]);
 
-			var httpFileServer = new HTTPBackendServer(targetDirectory, ip, port);
+			var httpBackendServer = new HTTPBackendServer(ip, port);
 
-			httpFileServer.Start();
+			httpBackendServer.Start();
 		}
 	}
 }
