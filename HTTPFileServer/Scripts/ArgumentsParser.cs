@@ -2,6 +2,9 @@
 using System.Linq;
 
 
+/// <summary>
+/// Arguments Parser.
+/// </summary>
 public class ArgumentsParser
 {
     private Dictionary<string, List<string>> m_Arguments;

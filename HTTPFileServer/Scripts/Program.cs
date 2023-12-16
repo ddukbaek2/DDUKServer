@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-class HttpFileServer
+
+/// <summary>
+/// HTTP File Server.
+/// </summary>
+public class HttpFileServer
 {
     private HttpListener m_HttpListener;
     private string m_TargetDirectory;
