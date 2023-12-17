@@ -1,20 +1,39 @@
-﻿namespace DDUKServer
+﻿using System.Collections.Generic;
+
+
+namespace DDUKServer
 {
-	public class SSRContext
+	public class SSRElement
 	{
+		
 	}
+
 
 	public class SSRWidget
 	{
-		public SSRWidget Child;
+		public SSRWidget Child { protected set; get; }
+		public List<SSRWidget> Children { protected set; get; }
 
 		public SSRWidget()
 		{
 		}
 
-		public SSRWidget Build(SSRContext context)
+		protected virtual void RefreshWidget()
 		{
-			return this;
+		}
+
+		protected virtual SSRWidget BuildLayout()
+		{
+			return new SSRWidget
+			{
+				Child = new SSRWidget
+				{
+					Child = new SSRWidget
+					{
+
+					}
+				}
+			};
 		}
 	}
 }

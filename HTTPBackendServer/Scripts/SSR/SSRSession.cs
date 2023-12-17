@@ -36,7 +36,7 @@ namespace DDUKServer
 				return HttpStatusCode.InternalServerError;
 			}
 
-			return HttpStatusCode.OK;
+			//return HttpStatusCode.OK;
 		}
 	}
 }
