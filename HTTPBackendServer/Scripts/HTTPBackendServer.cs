@@ -20,6 +20,24 @@ namespace DDUKServer
 			m_Sessions = new ConcurrentBag<Session>();
 		}
 
+		private void PushSessionToPool(Session session)
+		{
+			// 처리가 끝난 후 다시 풀에 넣는다.
+			m_Sessions.Add(session);
+		}
+
+		private Session PopSessionFromPool()
+		{
+			// 풀에서 가져온다.
+			if (!m_Sessions.TryTake(out var session))
+			{
+				// 없다면 새로 만든다.
+				session = new SSRSession(this);
+			}
+
+			return session;
+		}
+
 		protected override void ProcessRequest(HttpListenerContext context)
 		{
 			var request = context.Request;
@@ -28,22 +46,14 @@ namespace DDUKServer
 			var url = request.Url;
 			Console.WriteLine($"[SERVER][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
 
-			// 풀에서 가져온다.
-			if (!m_Sessions.TryTake(out var session))
-			{
-				// 없다면 새로 만든다.
-				session = new SSRSession(this);
-			}
-
 			// 클라는 서버에게 파일을 요청할 수 있다.
 			// 클라는 서버에게 문서를 요청할 수 있다. (파일과 사실상 동일한 방식이다)
 			// 클라는 서버에게 압축 파일을 스트리밍형태로 요청할 수 있다.
 
 			// 처리.
+			var session = PopSessionFromPool();
 			session.ProcessRequest(context);
-
-			// 처리가 끝난 후 다시 풀에 넣는다.
-			m_Sessions.Add(session);
+			PushSessionToPool(session);
 		}
 
 		public static void Main(string[] args)
