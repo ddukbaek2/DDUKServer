@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTTPBackendServer", "HTTPBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTTPFileServer", "HTTPFileServer\HTTPFileServer.csproj", "{F4947B84-3308-4F08-8858-48B6F56C1349}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSRServer", "SSRServer\SSRServer.csproj", "{7E1106A0-776E-42A0-84C2-CB72D43B1FAD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{F4947B84-3308-4F08-8858-48B6F56C1349}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4947B84-3308-4F08-8858-48B6F56C1349}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4947B84-3308-4F08-8858-48B6F56C1349}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E1106A0-776E-42A0-84C2-CB72D43B1FAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E1106A0-776E-42A0-84C2-CB72D43B1FAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E1106A0-776E-42A0-84C2-CB72D43B1FAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E1106A0-776E-42A0-84C2-CB72D43B1FAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

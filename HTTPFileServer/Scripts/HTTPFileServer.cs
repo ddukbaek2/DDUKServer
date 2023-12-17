@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using DDUKServer;
 
 
@@ -9,48 +11,28 @@ namespace DDUKServer
 	/// <summary>
 	/// HTTP File Server.
 	/// </summary>
-	public class HTTPFileServer
+	public class HTTPFileServer : HTTPServer
 	{
-		private HttpListener m_HttpListener;
 		private string m_TargetDirectory;
-		private string m_IP;
-		private int m_Port;
 
-		public HTTPFileServer(string targetDirectory, string ip, int port)
+		public HTTPFileServer(string targetDirectory, string ip, int port) : base(ip, port)
 		{
 			m_TargetDirectory = targetDirectory;
-			m_IP = ip;
-			m_Port = port;
-			m_HttpListener = new HttpListener();
-			m_HttpListener.Prefixes.Add($"http://127.0.0.1:{m_Port}/");
-			m_HttpListener.Prefixes.Add($"http://{m_IP}:{port}/");
 		}
 
-		public void Start()
+		public override void Start()
 		{
-			Console.WriteLine($"[HFS] Target Directory : {m_TargetDirectory}");
-			Console.WriteLine($"[HFS] IP : {m_IP}");
-			Console.WriteLine($"[HFS] Port : {m_Port}");
-
-			m_HttpListener.Start();
-			Console.WriteLine($"[HFS] Start.");
-			while (true)
-			{
-				try
-				{
-					var context = m_HttpListener.GetContext();
-					ProcessRequest(context);
-				}
-				catch (Exception exeption)
-				{
-					Console.WriteLine($"[HFS] Error: {exeption.Message}");
-				}
-			}
+			Console.WriteLine($"[SERVER] Target Directory : {m_TargetDirectory}");
+			base.Start();
 		}
 
-		private void ProcessRequest(HttpListenerContext context)
+		protected override void ProcessRequest(HttpListenerContext context)
 		{
-			Console.WriteLine($"[HFS][{context.Request.RemoteEndPoint.Address}:{context.Request.RemoteEndPoint.Port}] Request : {context.Request.Url}");
+			var request = context.Request;
+			var requestedEndPoint = request.RemoteEndPoint;
+			var httpMethod = request.HttpMethod;
+			var url = request.Url;
+			Console.WriteLine($"[SERVER][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
 
 			var requestedFile = context.Request.Url.AbsolutePath.Substring(1);
 			var filepath = Path.Combine(m_TargetDirectory, requestedFile);
@@ -59,7 +41,7 @@ namespace DDUKServer
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 				context.Response.OutputStream.Close();
-				Console.WriteLine($"[HFS] File is Not Found : {filepath}");
+				Console.WriteLine($"[SERVER] File is Not Found : {filepath}");
 				return;
 			}
 
@@ -67,30 +49,26 @@ namespace DDUKServer
 			{
 				using (var stream = File.OpenRead(filepath))
 				{
+					// CORS 헤더 설정.
+					context.Response.AddHeader("Access-Control-Allow-Origin", "*");
+
 					context.Response.ContentType = "application/octet-stream";
 					context.Response.ContentLength64 = stream.Length;
-					context.Response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
 
 					context.Response.StatusCode = (int)HttpStatusCode.OK;
 					stream.CopyTo(context.Response.OutputStream);
-					Console.WriteLine($"[HFS] OK : {filepath}");
+					Console.WriteLine($"[SERVER] OK : {filepath}");
 				}
 			}
 			catch (Exception exception)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				Console.WriteLine($"[HFS] Exception : {exception.Message}");
+				Console.WriteLine($"[SERVER] Exception : {exception.Message}");
 			}
 
 			context.Response.OutputStream.Close();
 		}
 
-		public void Stop()
-		{
-			Console.WriteLine($"[HFS] Stop.");
-			m_HttpListener.Stop();
-			m_HttpListener.Close();
-		}
 
 		public static void Main(string[] args)
 		{
@@ -109,8 +87,8 @@ namespace DDUKServer
 			var port = int.Parse(targetPorts[0]);
 
 			var httpFileServer = new HTTPFileServer(targetDirectory, ip, port);
-
 			httpFileServer.Start();
+			httpFileServer.Shutdown();
 		}
 	}
 }
