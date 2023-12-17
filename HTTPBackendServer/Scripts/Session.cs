@@ -41,7 +41,7 @@ namespace DDUKServer
 
 			var filename = request.Url;
 			var requestname = request.RawUrl;
-
+			
 			try
 			{
 				var html = m_StringBuilder.ToString();
