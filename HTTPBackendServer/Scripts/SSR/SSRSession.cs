@@ -27,6 +27,7 @@ namespace DDUKServer
 
 				response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
 				//response.AddHeader("Content-Encoding", "gzip"); // GZIP 헤더 설정.
+
 				response.ContentLength64 = bytes.Length;
 				await response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
 				Console.WriteLine($"[HBS] OK");

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace DDUKServer
 {
 	/// <summary>
-	/// 렌더링 모드.
+	/// Rendering Mode.
 	/// </summary>
 	public enum RenderingMode
 	{
@@ -66,7 +66,7 @@ namespace DDUKServer
 			return session;
 		}
 
-		protected override async Task ProcessRequest(HttpListenerContext context)
+		protected override async Task OnRequestProcess(HttpListenerContext context)
 		{
 			var request = context.Request;
 			var requestedEndPoint = request.RemoteEndPoint;
@@ -78,7 +78,8 @@ namespace DDUKServer
 			// 클라는 서버에게 문서를 요청할 수 있다. (파일과 사실상 동일한 방식이다)
 			// 클라는 서버에게 압축 파일을 스트리밍형태로 요청할 수 있다.
 
-			// 처리.
+			// 요청이 들어올때마다 세션을 생성 혹은 사용이 끝난 세션을 재사용하여 처리.
+			// 세션과 요청한 클라이언트는 절대로 동일개체는 아니다. 이전세션을 들고 있어도 의미없다는 이야기.
 			var session = PopSessionFromPool();
 			await session.ProcessRequest(context);
 			PushSessionToPool(session);
@@ -92,22 +93,6 @@ namespace DDUKServer
 		public static HTTPBackendServer CreateSSRHTTPBackendServer(string ip, int port)
 		{
 			return new HTTPBackendServer(ip, port, string.Empty, RenderingMode.SSR);
-		}
-
-		public static void Main(string[] args)
-		{
-			var argumentsParser = new ArgumentsParser(args);
-			var targetPorts = argumentsParser["-port"];
-
-			if (targetPorts.Count == 0)
-				targetPorts.Add("8990");
-
-			var ip = Utility.GetIPAddress();
-			var port = int.Parse(targetPorts[0]);
-
-			var httpBackendServer = CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
-			httpBackendServer.Start();
-			httpBackendServer.Shutdown();
 		}
 	}
 }

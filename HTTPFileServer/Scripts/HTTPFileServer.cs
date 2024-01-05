@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using DDUKServer;
 
 
 namespace DDUKServer
@@ -15,7 +13,7 @@ namespace DDUKServer
 	{
 		private string m_TargetDirectory;
 
-		public HTTPFileServer(string targetDirectory, string ip, int port) : base(ip, port)
+		public HTTPFileServer(string ip, int port, string targetDirectory) : base(ip, port)
 		{
 			m_TargetDirectory = targetDirectory;
 		}
@@ -26,7 +24,7 @@ namespace DDUKServer
 			base.Start();
 		}
 
-		protected override async Task ProcessRequest(HttpListenerContext context)
+		protected override async Task OnRequestProcess(HttpListenerContext context)
 		{
 			var request = context.Request;
 			var requestedEndPoint = request.RemoteEndPoint;
@@ -69,30 +67,6 @@ namespace DDUKServer
 			context.Response.OutputStream.Close();
 
 			await Task.CompletedTask;
-		}
-
-
-		public static void Main(string[] args)
-		{
-			var argumentsParser = new ArgumentsParser(args);
-			var targetDirectories = argumentsParser["-dir"];
-			var targetPorts = argumentsParser["-port"];
-
-			if (targetDirectories.Count == 0)
-			{
-				targetDirectories.Add($"{Utility.GetProjectDirectory()}\\Files");
-			}
-
-			if (targetPorts.Count == 0)
-				targetPorts.Add("8991");
-
-			var targetDirectory = targetDirectories[0];
-			var ip = Utility.GetIPAddress();
-			var port = int.Parse(targetPorts[0]);
-
-			var httpFileServer = new HTTPFileServer(targetDirectory, ip, port);
-			httpFileServer.Start();
-			httpFileServer.Shutdown();
 		}
 	}
 }

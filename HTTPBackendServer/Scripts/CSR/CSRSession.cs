@@ -9,7 +9,7 @@ namespace DDUKServer
 {
 	/// <summary>
 	/// 클라이언트사이드렌더링 세션.
-	/// 걍 파일을 요청하면 파일을 준다.
+	/// 걍 파일을 요청하면 파일을 읽어서 정보를 준다.
 	/// </summary>
 	public class CSRSession : Session
 	{
@@ -38,6 +38,7 @@ namespace DDUKServer
 
 				response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
 				//response.AddHeader("Content-Encoding", "gzip"); // GZIP 헤더 설정.
+
 				response.ContentLength64 = bytes.Length;
 				await response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
 				Console.WriteLine($"[HBS] OK");
