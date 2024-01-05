@@ -12,6 +12,8 @@ namespace DDUKServer
         private HttpListenerContext m_Context;
         private HTTPBackendServer m_Server;
 
+		public string TargetDirectory => m_Server.TargetDirectory;
+
         public Session(HTTPBackendServer server)
         {
             m_Context = null;

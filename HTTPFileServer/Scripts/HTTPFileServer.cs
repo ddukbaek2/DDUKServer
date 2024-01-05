@@ -32,7 +32,7 @@ namespace DDUKServer
 			var requestedEndPoint = request.RemoteEndPoint;
 			var httpMethod = request.HttpMethod;
 			var url = request.Url;
-			Console.WriteLine($"[SERVER][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
+			Console.WriteLine($"[HFS][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
 
 			var requestedFile = context.Request.Url.AbsolutePath.Substring(1);
 			var filepath = Path.Combine(m_TargetDirectory, requestedFile);
@@ -41,7 +41,7 @@ namespace DDUKServer
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 				context.Response.OutputStream.Close();
-				Console.WriteLine($"[SERVER] File is Not Found : {filepath}");
+				Console.WriteLine($"[HFS] File is Not Found : {filepath}");
 				return;
 			}
 
@@ -57,13 +57,13 @@ namespace DDUKServer
 
 					context.Response.StatusCode = (int)HttpStatusCode.OK;
 					stream.CopyTo(context.Response.OutputStream);
-					Console.WriteLine($"[SERVER] OK : {filepath}");
+					Console.WriteLine($"[HFS] OK : {filepath}");
 				}
 			}
 			catch (Exception exception)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-				Console.WriteLine($"[SERVER] Exception : {exception.Message}");
+				Console.WriteLine($"[HFS] Exception : {exception.Message}");
 			}
 
 			context.Response.OutputStream.Close();

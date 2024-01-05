@@ -23,13 +23,13 @@ namespace DDUKServer
 			var requestedEndPoint = request.RemoteEndPoint;
 			var httpMethod = request.HttpMethod;
 			var url = request.Url;
-			Console.WriteLine($"[SERVER][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
+
 			var requestname = request.RawUrl;
 			var requestedFile = request.Url.AbsolutePath.Substring(1);
 			if (string.IsNullOrEmpty(requestedFile))
 				requestedFile = "index.html";
 
-			var filepath = $"{Utility.GetProjectDirectory()}\\Assets\\CCR\\{requestedFile}";
+			var filepath = $"{TargetDirectory}\\{requestedFile}";
 
 			try
 			{				

@@ -22,13 +22,16 @@ namespace DDUKServer
 	public class HTTPBackendServer : HTTPServer
 	{
 		private ConcurrentBag<ISession> m_Sessions;
+		private string m_TargetDirectory;
 		private RenderingMode m_RenderingMode;
 
+		public string TargetDirectory => m_TargetDirectory;
 		public RenderingMode RenderingMode => m_RenderingMode;
 
-		public HTTPBackendServer(string ip, int port, RenderingMode renderingMode) : base(ip, port)
+		public HTTPBackendServer(string ip, int port, string targetDirectory, RenderingMode renderingMode) : base(ip, port)
 		{
 			m_Sessions = new ConcurrentBag<ISession>();
+			m_TargetDirectory = targetDirectory;
 			m_RenderingMode = renderingMode;
 		}
 
@@ -69,7 +72,7 @@ namespace DDUKServer
 			var requestedEndPoint = request.RemoteEndPoint;
 			var httpMethod = request.HttpMethod;
 			var url = request.Url;
-			Console.WriteLine($"[SERVER][{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
+			Console.WriteLine($"[{requestedEndPoint.Address}:{requestedEndPoint.Port}][{httpMethod}] {url}");
 
 			// 클라는 서버에게 파일을 요청할 수 있다.
 			// 클라는 서버에게 문서를 요청할 수 있다. (파일과 사실상 동일한 방식이다)
@@ -79,6 +82,16 @@ namespace DDUKServer
 			var session = PopSessionFromPool();
 			await session.ProcessRequest(context);
 			PushSessionToPool(session);
+		}
+
+		public static HTTPBackendServer CreateCSRHTTPBackendServer(string ip, int port, string targetDirectory)
+		{
+			return new HTTPBackendServer(ip, port, targetDirectory, RenderingMode.CSR);
+		}
+
+		public static HTTPBackendServer CreateSSRHTTPBackendServer(string ip, int port)
+		{
+			return new HTTPBackendServer(ip, port, string.Empty, RenderingMode.SSR);
 		}
 
 		public static void Main(string[] args)
@@ -92,7 +105,7 @@ namespace DDUKServer
 			var ip = Utility.GetIPAddress();
 			var port = int.Parse(targetPorts[0]);
 
-			var httpBackendServer = new HTTPBackendServer(ip, port, RenderingMode.CSR);
+			var httpBackendServer = CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
 			httpBackendServer.Start();
 			httpBackendServer.Shutdown();
 		}
