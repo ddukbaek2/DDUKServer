@@ -9,6 +9,9 @@ namespace DDUKServer
 	}
 
 
+	/// <summary>
+	/// 서버사이드렌더링 위젯.
+	/// </summary>
 	public class SSRWidget
 	{
 		public SSRWidget Child { protected set; get; }

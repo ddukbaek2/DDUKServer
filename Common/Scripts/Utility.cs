@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
+using System.Reflection;
 
 
 namespace DDUKServer
@@ -8,6 +10,23 @@ namespace DDUKServer
 	/// </summary>
 	public static class Utility
 	{
+		public static string GetProjectDirectory()
+		{
+			var executeApplicationDirectory = Utility.GetExecuteApplicationDirectory();
+			var directoryInformation = new DirectoryInfo(executeApplicationDirectory);
+			return directoryInformation.Parent.Parent.Parent.FullName;
+		}
+
+		public static string GetExecuteApplicationDirectory()
+		{
+			var assembly = Assembly.GetExecutingAssembly();
+			if (assembly == null)
+				return string.Empty;
+
+			var executeApplicationDirectory = Path.GetDirectoryName(assembly.Location);
+			return executeApplicationDirectory;
+		}
+
 		public static string GetIPAddress()
 		{
 			var hostName = Dns.GetHostName();

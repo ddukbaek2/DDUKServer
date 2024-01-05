@@ -1,44 +1,69 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 
 namespace DDUKServer
 {
-    /// <summary>
-    /// HTTP Backend Server.
-    /// </summary>
-    public class HTTPBackendServer : HTTPServer
+	/// <summary>
+	/// 렌더링 모드.
+	/// </summary>
+	public enum RenderingMode
 	{
-		private ConcurrentBag<Session> m_Sessions;
+		CSR,
+		SSR,
+	}
 
-		public HTTPBackendServer(string ip, int port) : base(ip, port)
+
+	/// <summary>
+	/// HTTP Backend Server.
+	/// </summary>
+	public class HTTPBackendServer : HTTPServer
+	{
+		private ConcurrentBag<ISession> m_Sessions;
+		private RenderingMode m_RenderingMode;
+
+		public RenderingMode RenderingMode => m_RenderingMode;
+
+		public HTTPBackendServer(string ip, int port, RenderingMode renderingMode) : base(ip, port)
 		{
-			m_Sessions = new ConcurrentBag<Session>();
+			m_Sessions = new ConcurrentBag<ISession>();
+			m_RenderingMode = renderingMode;
 		}
 
-		private void PushSessionToPool(Session session)
+		private void PushSessionToPool(ISession session)
 		{
 			// 처리가 끝난 후 다시 풀에 넣는다.
 			m_Sessions.Add(session);
 		}
 
-		private Session PopSessionFromPool()
+		private ISession PopSessionFromPool()
 		{
 			// 풀에서 가져온다.
 			if (!m_Sessions.TryTake(out var session))
 			{
 				// 없다면 새로 만든다.
-				session = new SSRSession(this);
+				switch (m_RenderingMode)
+				{
+					case RenderingMode.CSR:
+						{
+							session = new CSRSession(this);
+							break;
+						}
+
+					case RenderingMode.SSR:
+						{
+							session = new SSRSession(this);
+							break;
+						}
+				}
 			}
 
 			return session;
 		}
 
-		protected override void ProcessRequest(HttpListenerContext context)
+		protected override async Task ProcessRequest(HttpListenerContext context)
 		{
 			var request = context.Request;
 			var requestedEndPoint = request.RemoteEndPoint;
@@ -52,7 +77,7 @@ namespace DDUKServer
 
 			// 처리.
 			var session = PopSessionFromPool();
-			session.ProcessRequest(context);
+			await session.ProcessRequest(context);
 			PushSessionToPool(session);
 		}
 
@@ -67,7 +92,7 @@ namespace DDUKServer
 			var ip = Utility.GetIPAddress();
 			var port = int.Parse(targetPorts[0]);
 
-			var httpBackendServer = new HTTPBackendServer(ip, port);
+			var httpBackendServer = new HTTPBackendServer(ip, port, RenderingMode.CSR);
 			httpBackendServer.Start();
 			httpBackendServer.Shutdown();
 		}

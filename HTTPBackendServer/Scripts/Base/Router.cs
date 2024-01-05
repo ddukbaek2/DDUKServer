@@ -2,8 +2,14 @@
 
 namespace DDUKServer
 {
+	/// <summary>
+	/// 라우터.
+	/// </summary>
 	public class Router
 	{
+		/// <summary>
+		/// 이동 가능한 페이지.
+		/// </summary>
 		private Dictionary<string, string> m_Data;
 
 		public Router()

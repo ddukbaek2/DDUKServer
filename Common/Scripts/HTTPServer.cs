@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
+
 
 namespace DDUKServer
 {
@@ -80,14 +80,14 @@ namespace DDUKServer
 			Console.WriteLine($"[SERVER] Shutdown.");
 		}
 
-		private static void RequestAsync(HTTPServer server, HttpListener httpListener)
+		private static async Task RequestAsync(HTTPServer server, HttpListener httpListener)
 		{
 			while (httpListener.IsListening)
 			{
 				try
 				{
 					var context = httpListener.GetContext();
-					server.ProcessRequest(context);
+					await server.ProcessRequest(context);
 				}
 				catch (HttpListenerException exception)
 				{
@@ -100,6 +100,6 @@ namespace DDUKServer
 			}
 		}
 
-		protected abstract void ProcessRequest(HttpListenerContext context);
+		protected abstract Task ProcessRequest(HttpListenerContext context);
 	}
 }

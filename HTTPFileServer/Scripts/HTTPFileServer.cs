@@ -26,7 +26,7 @@ namespace DDUKServer
 			base.Start();
 		}
 
-		protected override void ProcessRequest(HttpListenerContext context)
+		protected override async Task ProcessRequest(HttpListenerContext context)
 		{
 			var request = context.Request;
 			var requestedEndPoint = request.RemoteEndPoint;
@@ -67,6 +67,8 @@ namespace DDUKServer
 			}
 
 			context.Response.OutputStream.Close();
+
+			await Task.CompletedTask;
 		}
 
 
@@ -77,7 +79,9 @@ namespace DDUKServer
 			var targetPorts = argumentsParser["-port"];
 
 			if (targetDirectories.Count == 0)
-				targetDirectories.Add($"{Environment.CurrentDirectory}\\Files");
+			{
+				targetDirectories.Add($"{Utility.GetProjectDirectory()}\\Files");
+			}
 
 			if (targetPorts.Count == 0)
 				targetPorts.Add("8991");

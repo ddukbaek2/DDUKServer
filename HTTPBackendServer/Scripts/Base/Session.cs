@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Threading.Tasks;
 
 
 namespace DDUKServer
@@ -17,16 +18,16 @@ namespace DDUKServer
             m_Server = server;
         }
 
-        public void ProcessRequest(HttpListenerContext context)
+        public async Task ProcessRequest(HttpListenerContext context)
         {
 			m_Context = context;
 			var request = m_Context.Request;
 			var response = m_Context.Response;
-			response.StatusCode = (int)OnProcessRequest(request, response);
+			response.StatusCode = (int) await OnProcessRequest(request, response);
 			response.Close();
 			m_Context = null;
 		}
 
-		protected abstract HttpStatusCode OnProcessRequest(HttpListenerRequest request, HttpListenerResponse response);
+		protected abstract Task<HttpStatusCode> OnProcessRequest(HttpListenerRequest request, HttpListenerResponse response);
     }
 }
