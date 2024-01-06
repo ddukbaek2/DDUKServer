@@ -79,7 +79,7 @@ namespace DDUKServer
 			// 클라는 서버에게 압축 파일을 스트리밍형태로 요청할 수 있다.
 
 			// 요청이 들어올때마다 세션을 생성 혹은 사용이 끝난 세션을 재사용하여 처리.
-			// 세션과 요청한 클라이언트는 절대로 동일개체는 아니다. 이전세션을 들고 있어도 의미없다는 이야기.
+			// 세션과 요청한 클라이언트는 절대로 동일개체가 아니다. 이전세션을 들고 있어도 의미없다는 이야기.
 			var session = PopSessionFromPool();
 			await session.ProcessRequest(context);
 			PushSessionToPool(session);

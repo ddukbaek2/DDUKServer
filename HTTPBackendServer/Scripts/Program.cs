@@ -20,10 +20,10 @@
 			var port = int.Parse(targetPorts[0]);
 
 			// CSR.
-			var httpBackendServer = HTTPBackendServer.CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
+			//var httpBackendServer = HTTPBackendServer.CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
 
 			// SSR.
-			//var httpBackendServer = HTTPBackendServer.CreateSSRHTTPBackendServer(ip, port);
+			var httpBackendServer = HTTPBackendServer.CreateSSRHTTPBackendServer(ip, port);
 			httpBackendServer.Start();
 			httpBackendServer.Shutdown();
 		}

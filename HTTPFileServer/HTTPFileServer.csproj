@@ -7,7 +7,7 @@
     <Nullable>disable</Nullable>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <StartupObject>DDUKServer.HTTPFileServer</StartupObject>
+    <StartupObject>DDUKServer.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
