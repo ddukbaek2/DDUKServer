@@ -10,7 +10,7 @@ namespace DDUKServer.HTML
 	/// </summary>
 	public class Image : Element
 	{
-		public override string Tag => "img";
+		public override string Name => "img";
 		public string Source { set; get; }
 		public string Width { set; get; }
 		public string Height { set; get; }

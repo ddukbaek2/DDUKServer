@@ -23,7 +23,7 @@
 			//var httpBackendServer = HTTPBackendServer.CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
 
 			// SSR.
-			var httpBackendServer = HTTPBackendServer.CreateSSRHTTPBackendServer(ip, port);
+			var httpBackendServer = HTTPBackendServer.CreateSSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\SSR");
 			httpBackendServer.Start();
 			httpBackendServer.Shutdown();
 		}

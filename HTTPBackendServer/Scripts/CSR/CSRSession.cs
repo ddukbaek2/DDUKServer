@@ -25,22 +25,35 @@ namespace DDUKServer
 			var url = request.Url;
 
 			var requestname = request.RawUrl;
-			var requestedFile = request.Url.AbsolutePath.Substring(1);
+			var requestedFile = request.Url.AbsolutePath.Substring(1); // URL 없이 "/filename.extension" 이런식으로 나옴.
 			if (string.IsNullOrEmpty(requestedFile))
 				requestedFile = "index.html";
 
 			var filepath = $"{TargetDirectory}\\{requestedFile}";
 
 			try
-			{				
-				var html = await File.ReadAllTextAsync(filepath);
-				var bytes = Encoding.UTF8.GetBytes(html);
+			{
+				var bytes = default(byte[]);
+				if (filepath.EndsWith(".html"))
+				{
+					var html = await File.ReadAllTextAsync(filepath);
+					bytes = Encoding.UTF8.GetBytes(html);
+					response.ContentType = "text/html";
+					response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
+				}
+				else
+				{
+					bytes = await File.ReadAllBytesAsync(filepath);
+					response.ContentType = "application/octet-stream"; // 다운로드 대상.
+					response.AddHeader("Content-Disposition", $"attachment; filename={requestedFile}");
+				}
 
-				response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS 헤더 설정.
 				//response.AddHeader("Content-Encoding", "gzip"); // GZIP 헤더 설정.
 
 				response.ContentLength64 = bytes.Length;
 				await response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
+				response.OutputStream.Close();
+
 				Console.WriteLine($"[HBS] OK");
 
 				return HttpStatusCode.OK;

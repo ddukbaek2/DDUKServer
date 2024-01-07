@@ -90,9 +90,9 @@ namespace DDUKServer
 			return new HTTPBackendServer(ip, port, targetDirectory, RenderingMode.CSR);
 		}
 
-		public static HTTPBackendServer CreateSSRHTTPBackendServer(string ip, int port)
+		public static HTTPBackendServer CreateSSRHTTPBackendServer(string ip, int port, string targetDirectory)
 		{
-			return new HTTPBackendServer(ip, port, string.Empty, RenderingMode.SSR);
+			return new HTTPBackendServer(ip, port, targetDirectory, RenderingMode.SSR);
 		}
 	}
 }

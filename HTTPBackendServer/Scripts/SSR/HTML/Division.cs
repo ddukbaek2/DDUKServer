@@ -10,7 +10,7 @@ namespace DDUKServer.HTML
     /// </summary>
     public class Division : Element
 	{
-		public override string Tag => "div";
+		public override string Name => "div";
 
 		//public Point2Int Position { set; get; } = Point2Int.Identity; // 
 		public Point2Int Size { set; get; } = Point2Int.Identity; // width, height.

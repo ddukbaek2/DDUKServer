@@ -5,6 +5,6 @@
 	/// </summary>
 	public class Paragraph : Element
 	{
-		public override string Tag => "p";
+		public override string Name => "p";
 	}
 }

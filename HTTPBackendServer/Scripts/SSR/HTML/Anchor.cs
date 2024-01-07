@@ -5,7 +5,7 @@
 	/// </summary>
 	public class Anchor : Element
 	{
-		public override string Tag => "a";
+		public override string Name => "a";
 		public string URL { set; get; }
 		public string Target { set; get; } // _self, _blank, _parent, _top, TargetName.
 	}

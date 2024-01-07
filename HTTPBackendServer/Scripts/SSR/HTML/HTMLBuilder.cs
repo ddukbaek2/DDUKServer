@@ -22,10 +22,10 @@ namespace DDUKServer.HTML
 
             s_StringBuilder.Clear();
 			s_StringBuilder.AppendLine($"<!DOCTYPE html>");
-            s_StringBuilder.AppendLine($"<html>");
+            s_StringBuilder.AppendLine($"<html lang=\"en\">");
             s_StringBuilder.AppendLine($"	<head>");
             s_StringBuilder.AppendLine($"		<meta charset=\"UTF-8\">");
-			s_StringBuilder.AppendLine($"		<meta name=\"viewport\" content=\"width=device-width, inital-scale=1.0\">");
+			s_StringBuilder.AppendLine($"		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
 			s_StringBuilder.AppendLine($"		<title>{title}</title>");
 			s_StringBuilder.AppendLine($"		<style>{style}</style>");
             s_StringBuilder.AppendLine($"	</head>");
@@ -53,16 +53,27 @@ namespace DDUKServer.HTML
                     indent += "\t";
                 }
 
-                if (element.CSS == null)
-                {
-                    s_StringBuilder.AppendLine($"{indent}<{element.Tag}>");
-                }
-                else
-                {
-                    s_StringBuilder.AppendLine($"{indent}<{element.Tag} class=\"#{element.CSS.Name}\">");
-                }
+                s_StringBuilder.Append($"{indent}<{element.Name} ");
 
-                if (!string.IsNullOrEmpty(element.Value))
+                var index = 0;
+                var count = element.Attributes.Count;
+                var enumerator = element.Attributes.GetEnumerator();
+
+				while (enumerator.MoveNext())
+				{
+					var attribute = enumerator.Current;
+					s_StringBuilder.Append($"{attribute.Key}=\"{attribute.Value}\"");
+					++index;
+
+					if (index < count)
+					{
+                        s_StringBuilder.Append(" ");
+					}
+				}
+
+				s_StringBuilder.AppendLine(">");
+
+				if (!string.IsNullOrEmpty(element.Value))
                 {
                     s_StringBuilder.AppendLine($"{indent}{element.Value}");
                 }
@@ -75,7 +86,7 @@ namespace DDUKServer.HTML
                     }
                 }
 
-                s_StringBuilder.AppendLine($"{indent}</{element.Tag}>");
+                s_StringBuilder.AppendLine($"{indent}</{element.Name}>");
                 return string.Empty;
             }
 
