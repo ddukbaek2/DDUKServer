@@ -24,6 +24,7 @@ namespace DDUKServer
 		private ConcurrentBag<ISession> m_Sessions;
 		private string m_TargetDirectory;
 		private RenderingMode m_RenderingMode;
+		private Type m_SessionType;
 
 		public string TargetDirectory => m_TargetDirectory;
 		public RenderingMode RenderingMode => m_RenderingMode;
@@ -33,6 +34,11 @@ namespace DDUKServer
 			m_Sessions = new ConcurrentBag<ISession>();
 			m_TargetDirectory = targetDirectory;
 			m_RenderingMode = renderingMode;
+		}
+
+		public void SetSessionType(Type sessionType)
+		{
+			m_SessionType = sessionType;
 		}
 
 		private void PushSessionToPool(ISession session)
@@ -51,13 +57,13 @@ namespace DDUKServer
 				{
 					case RenderingMode.CSR:
 						{
-							session = new CSRSession(this);
+							session = (ISession)ManagedObject.Create(m_SessionType, this);//new CSRSession(this);
 							break;
 						}
 
 					case RenderingMode.SSR:
 						{
-							session = new SSRSession(this);
+							session = (ISession)ManagedObject.Create(m_SessionType, this);//new SSRSession(this);
 							break;
 						}
 				}

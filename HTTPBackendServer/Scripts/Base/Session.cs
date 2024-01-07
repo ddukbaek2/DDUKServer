@@ -8,14 +8,14 @@ namespace DDUKServer
 	/// <summary>
 	/// Session.
 	/// </summary>
-	public abstract class Session : ISession
+	public abstract class Session : ManagedObject, ISession
 	{
         private HttpListenerContext m_Context;
         private HTTPBackendServer m_Server;
 
 		public string TargetDirectory => m_Server.TargetDirectory;
 
-        public Session(HTTPBackendServer server)
+        public Session(HTTPBackendServer server) : base()
         {
             m_Context = null;
             m_Server = server;

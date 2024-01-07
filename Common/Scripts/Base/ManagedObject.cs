@@ -40,7 +40,7 @@ namespace DDUKServer
 		/// </summary>
 		public static ManagedObject Create(Type disposableObjectType, params object[] arguments)
 		{
-			var managedObject = Activator.CreateInstance(disposableObjectType) as ManagedObject;
+			var managedObject = Activator.CreateInstance(disposableObjectType, arguments) as ManagedObject;
 			if (managedObject == null)
 				return null;
 

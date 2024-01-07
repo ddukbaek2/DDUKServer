@@ -1,14 +1,11 @@
-﻿namespace DDUKServer
+﻿using System;
+
+
+namespace DDUKServer.HTTPBackendServerExample
 {
-	/// <summary>
-	/// 콘솔 애플리케이션.
-	/// </summary>
 	public static class Program
 	{
-		/// <summary>
-		/// 진입점.
-		/// </summary>
-		public static void Main(string[] args)
+		public static void Main(params string[] args)
 		{
 			var argumentsParser = new ArgumentsParser(args);
 			var targetPorts = argumentsParser["-port"];
@@ -21,11 +18,11 @@
 
 			// CSR.
 			//var httpBackendServer = HTTPBackendServer.CreateCSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\CSR");
-			//httpBackendServer.SetSessionType(typeof(CSRSession));
 
 			// SSR.
 			var httpBackendServer = HTTPBackendServer.CreateSSRHTTPBackendServer(ip, port, $"{Utility.GetProjectDirectory()}\\Assets\\SSR");
-			httpBackendServer.SetSessionType(typeof(SSRSession));
+			//httpBackendServer.SetSessionType(Type.GetType("DDUKServer.HTTPBackendServerExample.ExampleSession, HTTPBackendServerExample"));
+			httpBackendServer.SetSessionType(typeof(ExampleSession));
 			httpBackendServer.Start();
 			httpBackendServer.Shutdown();
 		}
