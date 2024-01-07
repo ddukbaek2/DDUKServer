@@ -6,7 +6,7 @@ using Color3Byte = DDUKServer.Color3<byte>;
 namespace DDUKServer.HTML
 {
     /// <summary>
-    /// 서버사이드렌더링 위젯 - Division.
+    /// 영역 요소.
     /// </summary>
     public class Division : Element
 	{

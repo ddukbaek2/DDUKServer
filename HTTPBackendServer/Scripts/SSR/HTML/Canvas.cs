@@ -1,9 +1,9 @@
 ﻿namespace DDUKServer.HTML
 {
 	/// <summary>
-	/// 문단 요소.
+	/// 그래픽 요소.
 	/// </summary>
-	public class Paragraph : Element
+	public class Canvas : Element
 	{
 		public override string Tag => "p";
 	}

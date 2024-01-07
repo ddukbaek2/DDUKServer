@@ -12,6 +12,7 @@ namespace DDUKServer.HTML
         public abstract string Tag { get; }
 		public string Value { set; get; }
 
+		public Dictionary<string, string> Attributes { set; get; } = new Dictionary<stirng, string>();
 		public CSS CSS { set; get; }
 		public List<Element> Children { set; get; } = new List<Element>();
 
