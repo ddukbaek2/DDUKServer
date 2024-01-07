@@ -36,6 +36,11 @@ namespace DDUKServer
 								{
 									Value = "Server Side Rendering",
 								},
+
+								new Image
+								{
+									Source = "Assets/",
+								},
 							},
 						}
 					},

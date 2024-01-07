@@ -10,6 +10,10 @@ namespace DDUKServer
 	/// </summary>
 	public static class Utility
 	{
+		/// <summary>
+		/// 현재 프로젝트의 루트 디렉토리 경로를 반환.
+		/// 프로그램 실행 지점으로부터 세번 위로 올라가면 CSPROJ가 존재하는 위치라고 가정함.
+		/// </summary>
 		public static string GetProjectDirectory()
 		{
 			var executeApplicationDirectory = Utility.GetExecuteApplicationDirectory();
@@ -17,6 +21,9 @@ namespace DDUKServer
 			return directoryInformation.Parent.Parent.Parent.FullName;
 		}
 
+		/// <summary>
+		/// 현재 프로그램이 실행되는 디렉토리 경로를 반환.
+		/// </summary>
 		public static string GetExecuteApplicationDirectory()
 		{
 			var assembly = Assembly.GetExecutingAssembly();
@@ -27,6 +34,9 @@ namespace DDUKServer
 			return executeApplicationDirectory;
 		}
 
+		/// <summary>
+		/// 현재 프로그램이 실행되는 장비의 아이피를 반환.
+		/// </summary>
 		public static string GetIPAddress()
 		{
 			var hostName = Dns.GetHostName();
