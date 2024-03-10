@@ -5,6 +5,6 @@
 	/// </summary>
 	public class Canvas : Element
 	{
-		public override string Name => "p";
+		public override string Name => "canvas";
 	}
 }

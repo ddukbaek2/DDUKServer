@@ -27,7 +27,9 @@ namespace DDUKServer.HTML
             s_StringBuilder.AppendLine($"		<meta charset=\"UTF-8\">");
 			s_StringBuilder.AppendLine($"		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
 			s_StringBuilder.AppendLine($"		<title>{title}</title>");
-			s_StringBuilder.AppendLine($"		<style>{style}</style>");
+            s_StringBuilder.AppendLine($"		<style>");
+			s_StringBuilder.AppendLine($"	        {style}");
+			s_StringBuilder.AppendLine($"		</style>");
             s_StringBuilder.AppendLine($"	</head>");
             s_StringBuilder.AppendLine($"	<body>");
             for (var i = 0; i < bodies.Length; ++i)
@@ -65,7 +67,7 @@ namespace DDUKServer.HTML
 					s_StringBuilder.Append($"{attribute.Key}=\"{attribute.Value}\"");
 					++index;
 
-					if (index < count)
+					if (index + 1 < count)
 					{
                         s_StringBuilder.Append(" ");
 					}

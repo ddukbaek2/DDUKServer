@@ -9,7 +9,7 @@ namespace DDUKServer
 	/// <summary>
 	/// HTTP Server.
 	/// </summary>
-	public abstract class HTTPServer
+	public abstract class HTTPServer : DisposableObject
 	{
 		protected HttpListener m_HttpListener; // 윈도우에서는 IOCP 기반.
 		protected int m_MaxTasks;
@@ -18,7 +18,7 @@ namespace DDUKServer
 		protected string m_IP;
 		protected int m_Port;
 
-		protected HTTPServer(string ip, int port)
+		protected HTTPServer(string ip, int port) : base()
 		{
 			m_MaxTasks = Environment.ProcessorCount;
 			m_Tasks = new List<Task>();
@@ -29,6 +29,19 @@ namespace DDUKServer
 			m_HttpListener = new HttpListener();
 			m_HttpListener.Prefixes.Add($"http://127.0.0.1:{m_Port}/");
 			m_HttpListener.Prefixes.Add($"http://{m_IP}:{m_Port}/");
+		}
+
+		protected override void OnDispose(bool explicitedDispose)
+		{
+			base.OnDispose(explicitedDispose);
+		}
+
+		public void Dispose()
+		{
+			if (IsDisposed)
+				return;
+
+			DisposableObject.Dispose(this);
 		}
 
 		public virtual void Start()

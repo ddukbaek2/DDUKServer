@@ -49,6 +49,13 @@ namespace DDUKServer
 		{
 		}
 
+		protected virtual Element OnRender()
+		{
+			return new Division
+			{
+			};
+		}
+
 		protected async override Task<HttpStatusCode> OnProcessRequest(HttpListenerRequest request, HttpListenerResponse response)
 		{
 			//var filename = request.Url;
@@ -73,36 +80,37 @@ namespace DDUKServer
 			{
 				if (acceptHeader.Contains("text/html"))
 				{
-					var rootElement = new Division
-					{
-						Children =
-						{
-							new Division
-							{
+					//var renderedElement = new Division
+					//{
+					//	Children =
+					//	{
+					//		new Division
+					//		{
 
-							},
-							new Division
-							{
-								Children =
-								{
-									new Paragraph
-									{
-										Value = "Server Side Rendering",
-									},
+					//		},
+					//		new Division
+					//		{
+					//			Children =
+					//			{
+					//				new Paragraph
+					//				{
+					//					Value = "Server Side Rendering",
+					//				},
 
-									//new Image
-									//{
-									//	Attributes =
-									//	{
-									//		{ "src", "Assets/zzio.png" },
-									//	},
-									//},
-								},
-							}
-						},
-					};
+					//				//new Image
+					//				//{
+					//				//	Attributes =
+					//				//	{
+					//				//		{ "src", "Assets/zzio.png" },
+					//				//	},
+					//				//},
+					//			},
+					//		}
+					//	},
+					//};
 
-					HTMLBuilder.BuildLayout(rootElement, out var html, out var css);
+					var renderedElement = OnRender();
+					HTMLBuilder.BuildLayout(renderedElement, out var html, out var css);
 					//var document = HTMLBuilder.BuildDocument("HTTPBackendServer", "Server Side Rendering");
 					var document = HTMLBuilder.BuildDocument("HTTPBackendServer", css, html);
 					bytes = Encoding.UTF8.GetBytes(document);
@@ -123,7 +131,6 @@ namespace DDUKServer
 					response.AddHeader("Access-Control-Allow-Origin", "*"); // CORS.
 					response.AddHeader("X-Content-Type-Options", "nosniff");
 
-
 					//foreach (var header in response.Headers)
 					//{
 					//	Console.WriteLine(header);
@@ -138,18 +145,34 @@ namespace DDUKServer
 					bytes = await File.ReadAllBytesAsync($"{TargetDirectory}\\{requestedFile}");
 
 					// 헤더설정.
-					if (extension == ".ico")
-						response.ContentType = "image/vnd.microsoft.icon"; // "image/x-icon";
-					else if (extension == ".png")
-						response.ContentType = "image/png";
-					else if (extension == ".jpg" || extension == ".jpeg")
-						response.ContentType = "image/jpeg";
-					else if (extension == ".js")
-						response.ContentType = "text/javascript";
-					else if (extension == ".oga" || extension == ".ogx")
-						response.ContentType = "audio/ogg";
-					else if (extension == ".ogv")
-						response.ContentType = "video/ogg";
+					switch (extension)
+					{
+						case ".ico":
+							response.ContentType = "image/vnd.microsoft.icon"; // "image/x-icon";
+							break;
+
+						case ".png":
+							response.ContentType = "image/png";
+							break;
+
+						case ".jpg":
+						case ".jpeg":
+							response.ContentType = "image/jpeg";
+							break;
+
+						case ".js":
+							response.ContentType = "text/javascript";
+							break;
+
+						case ".oga":
+						case ".ogx":
+							response.ContentType = "audio/ogg";
+							break;
+
+						case ".ogv":
+							response.ContentType = "video/ogg";
+							break;
+					}
 
 					//response.AddHeader("Pragma", "no-cache"); // HTML1.0 캐시 호환성.
 					//response.AddHeader("Expires", "0"); // 캐시 만료.

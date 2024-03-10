@@ -1,6 +1,4 @@
 ﻿using DDUKServer.HTML;
-using System.Net;
-using System.Threading.Tasks;
 
 
 namespace DDUKServer.HTTPBackendServerExample
@@ -11,7 +9,7 @@ namespace DDUKServer.HTTPBackendServerExample
 		{
 		}
 
-		protected override Task<HttpStatusCode> OnProcessRequest(HttpListenerRequest request, HttpListenerResponse response)
+		protected override Element OnRender()
 		{
 			var root = new Division
 			{
@@ -28,7 +26,8 @@ namespace DDUKServer.HTTPBackendServerExample
 							{
 								Attributes =
 								{
-									{ "background-color", "#FF0000" },
+									//{ "background-color", "#FF0000" },
+									{ "style", "background-color: #FF0000;" },
 								},
 
 								Value = "Server Side Rendering",
@@ -46,7 +45,7 @@ namespace DDUKServer.HTTPBackendServerExample
 				},
 			};
 
-			return base.OnProcessRequest(request, response);
+			return root;
 		}
 	}
 }
